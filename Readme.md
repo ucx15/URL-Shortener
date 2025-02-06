@@ -50,15 +50,18 @@ The backend should be running on [http://localhost:5000](http://localhost:3000).
 
 ## TODOs
 
+- [ ] Add animations to the frontend.
+
 - [ ] Add not found page (Frontend).
-
-- [ ] Design the Front End.
-
-- [x] Add a Database to store the shortened URLs.
 
 - [ ] Add a "Copy to Clipboard" button.
 
 - [ ] Host it. _Maybe, Maybe, Maybe...!_ 🤷🏻‍♂️
+
+- [x] Design the Front End.
+
+- [x] Add a Database to store the shortened URLs.
+
 
 ## Author
 
