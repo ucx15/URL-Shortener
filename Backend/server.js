@@ -1,9 +1,9 @@
-const utils =require('node:util');
 const crypto = require('crypto');
 
 const express = require('express');
 const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
+
 
 // Constants
 const HOST = "localhost";
@@ -15,25 +15,20 @@ const FRONTEND_HOST_URL = `http://${HOST}:${FRONTEND_PORT}`;
 
 const DB_NAME = "database.db";
 
-const CODE_LENGTH = 7;
+const CODE_LENGTH = 6;
 
 
-// App Config
+// Vars
+const db = new sqlite3.Database(DB_NAME);
 const app = express();
 app.use(
 	cors({
 		origin: '*', credentials: true
 	})
 )
-
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.json());
 
-
-// Vars
-const db = new sqlite3.Database(DB_NAME);
-// const urls = [];    // { url: code }
 
 
 function makeTables() {
@@ -45,15 +40,10 @@ function makeTables() {
 	db.run(query, (err) => {
 		if (err) { console.error(err);}
 	});
-	console.log('Tables created');
+	console.log('Tables Loaded!');
 }
 makeTables();
-// db.run('DROP TABLE urls;', (err, rows) => {
-// 	if (err) {
-// 		console.error(err);
-// 	}
-// 	console.log(rows);
-// });
+
 
 // TODO: add timestamp to decrease collision chances, although it's already very low
 function generateCode(inp) {
@@ -81,7 +71,6 @@ function isURLinDB(url, callback) {
 }
 
 
-
 function addURLtoDB(url, code) {
 	const query = `INSERT INTO urls (url, code) VALUES (?, ?)`;
 	db.get(query, url, code, (err) => {
@@ -106,17 +95,6 @@ function getCodeFromDB(url, callback) {
     });
 }
 
-// function getURLFromDB(code) {
-// 	const query = `SELECT url FROM urls WHERE code = ?`;
-// 	db.get(query, code, (err, row) => {
-// 		if (err) {
-// 			console.error(err);
-// 		}
-
-// 		console.log(`FETCH url  "${row.url}" -> ${code}`);
-// 		return row.url;
-// 	});
-// }
 
 function getURLFromDB(code, callback) {
     const query = `SELECT url FROM urls WHERE code = ?`;
@@ -140,11 +118,10 @@ app.post('/gen', (req, res) => {
 	}
 
 	isURLinDB(url, (exists) => {
-		let code;
 		if (!exists) {
-			console.log("Not in DB")
-			code = generateCode(url);
+			let code = generateCode(url);
 			addURLtoDB(url, code);
+
 			const tiny_url = `${HOST_URL}/${code}`;
 
 			res.json({ 'tiny_url': tiny_url });
@@ -156,7 +133,7 @@ app.post('/gen', (req, res) => {
 				if (code) {
 					const tiny_url = `${HOST_URL}/${code}`;
 					res.json({ 'tiny_url': tiny_url });
-					console.log(`GENERATE "${url}" -> ${code}`);
+					console.log(`LOOKUP "${url}" -> ${code}`);
 				}
 				else {
 					res.status(500).json({ error: "Could not retrieve code" });

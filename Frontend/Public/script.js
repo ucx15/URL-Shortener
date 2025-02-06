@@ -54,7 +54,7 @@ async function fetchTinyURL() {
 
 async function displayTinyURL() {
 	const data = await fetchTinyURL();
-	tinyUrlDOM.innerHTML = `<a href="${data}">${data}</a>`;
+	tinyUrlDOM.innerHTML = `<a href="${data}"  target="_blank" rel="noopener noreferrer">${data}</a>`;
 }
 
 
